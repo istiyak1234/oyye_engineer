@@ -1,0 +1,609 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    font-family: "Poppins", sans-serif;
+    font-weight: 400;
+}
+
+.main-section header {
+    background-color: #06002C;
+    box-shadow: 0px 2px 17px 2px white;
+}
+
+
+
+
+.main-section .container-fluid nav .web-logo img {
+    width: 236px;
+    height: 68px;
+}
+
+.main-section {
+    background-color: #06002C;
+    color: white;
+    height: 100vh;
+}
+
+.main-section .container .social-media-icon {
+    margin-top: 9%;
+}
+
+.main-section .container .social-media-icon a {
+    margin-right: 5%;
+    margin-left: 5%;
+    text-decoration:none;
+    color: white;
+}
+
+.para {
+    font-size: 1.1vw;
+}
+
+.webd {
+    color: #FFC300;
+    font-weight: 700;
+}
+
+.hello {
+    font-size: 3vw;
+    font-weight: 600;
+    line-height: 10vh;
+}
+
+.btn-1 {
+    background-color: #FFC300;
+    margin-top: 5%;
+    font-size: 1.3vw;
+    padding: 0.3% 2%;
+    border: none;
+    border-radius: 20px;
+    font-weight: 500;
+    transition: 0.6s;
+}
+
+.btn-1:hover {
+    transform: scale(1.1);
+    transition: 0.6s;
+}
+
+.img img {
+    width: 70%;
+    border: 2px solid #75F94C;
+}
+
+.Portfolio-section {
+    margin-top: 10%;
+}
+
+nav .nav-list-div .nav-list-item a {
+    color: white;
+    text-decoration: none;
+}
+
+.istiyak {
+    color: #75F94C;
+    font-weight: 600;
+}
+
+/*about me section /*/
+
+.about-me-section {
+    background-color: #FFFFFF;
+}
+.about-me-section, .skills-section, .education-section, .contact-section{
+    padding-top: 3%;
+    padding-bottom: 3%;
+}
+.about-me-section .container .about-img img {
+    width: 220px;
+    height: 220px;
+    border: 3px solid #75F94C;
+}
+
+.about-me p {
+    color: #000000;
+    font-size: 1.2vw;
+    text-align: justify;
+
+}
+
+.about-me h2 {
+    font-size: 2.5vw;
+    color: #253956;
+    font-weight: 600;
+    text-align: left;
+
+}
+
+.about-me-istiyak {
+    color: #FF0000;
+    font-weight: 600;
+}
+
+/*Skills section */
+.skills-section {
+    background-color: #06002C;
+}
+.skills-section .container .skills h2 span {
+    color: #75F94C;
+    font-size: 2.5vw;
+    font-weight: 600;
+   
+}
+
+.skills-section .container .skills p {
+    color: #FFFFFF;
+    font-size: 1.2vw;
+    text-align: justify;
+}
+
+.ui-ux-img h3,
+.product-img h3,
+.mobile-app-img h3 {
+    /* text-align: center; */
+    color: #FFC830;
+    margin-top: 2%;
+    font-size: 1.9vw;
+}
+.education-section .container .education-content .col-lg-12 div b{
+    font-size: 1.9vw;
+}
+
+.ui-ux-img p,
+.product-img p,
+.mobile-app-img p {
+    color: white;
+    font-size: 1.2vw;
+    margin-top: 2%;
+    text-align: justify;
+}
+
+
+/* education section */
+.education-section{
+    background-color: white;
+}
+.education-section .container .education-content div p {
+    font-size: 1.2vw;
+}
+.education-section .container .education-content{
+    padding-top: 1%;
+}
+/* Contact section */
+
+.contact-section {
+    background-color: #06002C;
+}
+
+.contact-section .container .contact-us h2 {
+    color: #75F94C;
+    font-weight: 600;
+    padding-bottom: 5px;
+    margin-bottom: 0 !important;
+}
+
+.contact-section .container .contact-details ul {
+    padding-top: 1%;
+    color: white;
+    list-style-type: none;
+    padding-left: 0;
+    line-height: 35px;
+}
+
+.contact-section .container .footer-text {
+    text-align: center;
+    color: white;
+    padding-top: 6%;
+}
+/* i m expert section */
+.im-expert-section{
+    background-color: #06002c;
+}
+.im-expert-heading{
+    /* text-align: center; */
+    margin-top: 3%;
+    margin-bottom: 2%;
+}
+.im-expert-heading h2 span{
+color: #FFA800;
+font-weight: 600;
+
+}
+.im-expert-heading h2{
+    color: white;
+    font-weight: 600;
+    padding-top: 3%;
+}
+.uiux-img p, .webdev-img p, .mobileapp-img p {
+    /* text-align: center; */
+    color: #FFFFFF;
+    font-weight: 500;
+
+    margin-top: 2%;
+
+}
+
+
+/* Developer Section */
+.card-page .container .developer{
+    font-weight: 600;
+    color: #043b8c;
+}
+.card-page{
+    height: 100%;
+    margin-top: 3%;
+}
+.cards{
+    height: 50vh;
+}
+.card-img img{
+    width: 150px;
+    height: 150px;
+}
+
+.projects-section h2 span {
+    color: #0d6efd;
+}
+.card-title {
+    font-weight: 600;
+}
+/* .card-img-top {
+    height: 180px;
+    object-fit: cover;
+    width: 100%;
+} */
+
+/* Section headers */
+.projects-section h2 span,
+.developer,
+#clients_scroll h2 {
+  color: #0d6efd;
+}
+
+/* Developer Cards */
+.cards {
+  background-color: #ffffff;
+  /* box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05); */
+  transition: transform 0.3s ease;
+}
+.cards:hover {
+  transform: translateY(-5px);
+}
+
+/* Project Cards */
+.card {
+  background-color: #ffffff;
+  border: none;
+  transition: transform 0.3s ease;
+}
+.card:hover {
+  transform: scale(1.02);
+}
+
+/* Buttons */
+.btn-outline-primary {
+  color: #0d6efd;
+  border-color: #0d6efd;
+}
+.btn-outline-primary:hover {
+  background-color: #0d6efd;
+  color: white;
+}
+
+/* Testimonial icons */
+.bi-chat-quote-fill {
+  color: #6610f2;
+}
+
+/* Social Icons */
+.social-media a i {
+  font-size: 1.2rem;
+  color: #0d6efd;
+  transition: color 0.3s;
+}
+.social-media a:hover i {
+  color: #6610f2;
+}
+
+
+/* Contact section1 */
+
+.contact-section1{
+   /* background-color: #253956; */
+     background-image: url("../photos/product-banner.png");
+     /* background-blend-mode: screen; */
+     background-position: center;
+     background-size: cover;
+     color: white;
+
+ 
+}
+.contact-section1 .container .social-text {
+    /* color: white; */
+    padding-top: 2%;
+    padding-bottom: 5px;
+    margin-bottom: 0 !important;
+}
+.contact-section1 .container .social-text span{
+    color: #FFA800;
+    font-weight: 600;
+}
+.contact-section1 .container .no-email{
+padding-bottom: 2%;
+/* color: #FFFFFF; */
+}
+.contact-section1 .container .social-media-icon{
+    padding-bottom: 2%;
+}
+@media screen and (max-width:1280px) {
+    nav .nav-list-div .nav-list-item a {
+        font-size: 1.5vw;
+    }
+    .para {
+        font-size: 1.7vw;
+    }
+.hello{
+    font-size: 3.5vw;
+}
+    .about-me p, .skills-section .container .skills p,
+     .ui-ux-img p, .product-img p, .mobile-app-img p, 
+        .education-section .container .education-content div p, .contact-section .container .row ul  {
+        font-size: 1.4vw;
+    }
+
+    .btn-1{
+        font-size: 1.7vw;
+    }
+    .skills-section .container .skills h2 span,
+     .about-me h2, .education-section .container .skills h2,
+      .contact-section .container .contact-us h2{
+        font-size: 3.5vw;
+    }
+    .ui-ux-img h3,
+.product-img h3,
+.mobile-app-img h3 {
+    /* text-align: center; */
+    color: #FFC830;
+    margin-top: 2%;
+    font-size: 2.6vw;
+}
+.education-section .container .education-content .col-lg-12 div b{
+    font-size: 2.6vw;
+}
+}
+
+@media screen and (max-width:1024px) {
+    .Portfolio-section {
+        margin-top: 9%;
+    }
+    .education-section .container .education-content .col-lg-12 div b {
+        font-size: 2vw;
+    }
+    .ui-ux-img h3, .product-img h3, .mobile-app-img h3 {
+        font-size: 2.5vw;
+    }
+}
+
+/* css for  mobile and tablet screen */
+@media screen and (min-width:920px) {
+    .hide-desktop {
+        display: none;
+    }
+}
+
+
+/* css for mobile screen */
+
+@media screen and (max-width:920px) {
+    .main-section {
+        height: auto;
+        padding-bottom: 10%;
+    }
+
+    .hide-mobile {
+        display: none;
+    }
+
+    .Portfolio-section {
+        margin-top: 5%;
+        text-align: center;
+    }
+
+    .img img {
+        width: 50%;
+        margin-bottom: 5%;
+    }
+
+    .hello {
+        font-size: 6vw;
+    }
+
+    .para {
+        font-size: 3vw;
+        padding-right: 1rem;
+        padding-left: 1rem;
+    }
+
+    .btn-1 {
+        font-size: 3.6vw;
+        margin-top: 5%;
+    }
+
+    .about-me-section {
+        margin-top: 5%;
+        text-align: center;
+    }
+
+    .about-me p {
+        padding-right: 0;
+        padding-left: 0;
+    }
+    .about-me p, .skills-section .container .skills p,
+     .ui-ux-img p, .product-img p, .mobile-app-img p, 
+        .education-section .container .education-content div p, .contact-section .container .row ul {
+        font-size: 3vw;
+    }
+     .skills-section .container .skills h2 span,
+    .about-me h2, .education-section .container .skills h2,
+     .contact-section .container .contact-us h2{
+       font-size: 6vw;
+       
+   }
+
+   .ui-ux-img h3,
+.product-img h3,
+.mobile-app-img h3 {
+    /* text-align: center; */
+    color: #FFC830;
+    margin-top: 2%;
+    font-size: 4vw;
+}
+.education-section .container .education-content .col-lg-12 div b{
+    font-size: 4vw;
+}
+
+    .about-me {
+        padding-right: 0;
+        padding-left: 0;
+    }
+
+    .about-me h2 {
+        margin-top: 5%;
+        text-align: center;
+    }
+
+    nav .nav-list-div .nav-list-item a {
+        color: white;
+        text-align: center;
+    }
+
+    .bi-list::before {
+        font-size: 6vw;
+        color: white;
+    }
+    .ui-ux-img p, .product-img p, .mobile-app-img p {
+        font-size: 3vw;
+    }
+}
+
+/* @media screen and (max-width:912px) {
+    nav .nav-list-div .nav-list-item a {
+        font-size: 2vw;
+    }
+} */
+
+@media screen and (max-width:820px) {
+    nav .nav-list-div .nav-list-item a {
+        font-size: 2.1vw;
+    }
+}
+
+@media screen and (max-width:812px) {
+    .gap-5 {
+        gap: 2rem !important;
+    }
+
+    .img img {
+        width: 55%;
+
+    }
+}
+
+
+
+@media screen and (max-width:600px) {
+
+    .about-me p, .skills-section .container .skills p,
+    .ui-ux-img p, .product-img p, .mobile-app-img p, 
+       .education-section .container .education-content div p, .contact-section .container .row ul  {
+       font-size: 3vw;
+   }
+    .skills-section .container .skills h2 span,
+   .about-me h2, .education-section .container .skills h2,
+    .contact-section .container .contact-us h2{
+      font-size: 7vw;
+      
+  }
+  .ui-ux-img h3,
+.product-img h3,
+.mobile-app-img h3 {
+    /* text-align: center; */
+    color: #FFC830;
+    margin-top: 2%;
+    font-size: 4.5vw;
+}
+.education-section .container .education-content .col-lg-12 div b{
+    font-size: 3.5vw;
+}
+    .para {
+        padding-right: 0;
+        padding-left: 0;
+    }
+
+    .btn-1 {
+        font-size: 4.6vw;
+    }
+
+    .about-me p {
+        padding-right: 0;
+        padding-left: 0;
+    }
+ .footer-text {
+        font-size: 3vw;
+    }
+
+    /* .ui-ux-img h3,
+    .product-img h3,
+    .mobile-app-img h3 {
+        color: #FFC830;
+    } */
+
+    .ui-ux-img p,
+    .product-img p,
+    .mobile-app-img p {
+        color: white;
+        font-weight: 500;
+        margin-top: 2%;
+        text-align: justify;
+
+    }
+    .contact-section1 .container .social-text{
+        font-size: 3vw;
+        padding-top: 4%;
+    }
+    .contact-section1 .container .no-email {
+        font-size: 3vw;
+    }
+    .uiux-img p, .webdev-img p, .mobileapp-img p {
+        font-size: 3vw;
+        color: white;
+    }
+}
+
+@media screen and (max-width:430px) {
+    nav .nav-list-div .nav-list-item a {
+        font-size: 2.9vw;
+    }
+
+    .gap-5 {
+        gap: 1.5rem !important;
+    }
+
+    .pb-4 {
+        padding-left: 1rem;
+        padding-right: 1rem
+    }
+
+    .hello {
+        padding-right: 1rem;
+        padding-left: 1rem;
+    }
+
+    .about-me-row {
+        padding-right: 1rem;
+        padding-left: 1rem;
+    }
+
+}

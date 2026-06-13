@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Live Location Tracker</title>
+</head>
+<body>
+  <h1>Tracking Location...</h1>
+
+  <form id="userForm">
+    <label>Device ID: <input type="text" id="deviceId" required></label><br><br>
+    <label>Name: <input type="text" id="userName" required></label><br><br>
+    <button type="submit">Start Tracking</button>
+  </form>
+
+  <div id="trackingInfo" style="display: none;">
+    <p><strong>Status:</strong> <span id="status">Waiting for location...</span></p>
+    <p><strong>Latitude:</strong> <span id="lat">--</span></p>
+    <p><strong>Longitude:</strong> <span id="lng">--</span></p>
+    <p><a id="mapLink" href="#" target="_blank">Open in Google Maps</a></p>
+  </div>
+
+  <script>
+    let trackingInterval = null;
+
+    function sendLocationToServer(deviceId, name) {
+      if (!navigator.geolocation) {
+        document.getElementById("status").innerText = "Geolocation not supported.";
+        return;
+      }
+
+      navigator.geolocation.getCurrentPosition(function(position) {
+        const lat = position.coords.latitude;
+        const lng = position.coords.longitude;
+
+        document.getElementById("status").innerText = "Location retrieved.";
+        document.getElementById("lat").innerText = lat;
+        document.getElementById("lng").innerText = lng;
+        document.getElementById("mapLink").href = `https://www.google.com/maps?q=${lat},${lng}`;
+
+        fetch("user_update_location.php", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            device_id: deviceId,
+            name: name,
+            latitude: lat,
+            longitude: lng
+          })
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            document.getElementById("status").innerText = "Location sent to server successfully.";
+          } else {
+            document.getElementById("status").innerText = "Server error.";
+          }
+        })
+        .catch(error => {
+          document.getElementById("status").innerText = "Fetch error.";
+          console.error(error);
+        });
+
+      }, function(error) {
+        document.getElementById("status").innerText = "Location error: " + error.message;
+      });
+    }
+
+    document.getElementById("userForm").addEventListener("submit", function(e) {
+      e.preventDefault();
+      const deviceId = document.getElementById("deviceId").value.trim();
+      const name = document.getElementById("userName").value.trim();
+
+      if (!deviceId || !name) {
+        alert("Please enter both Device ID and Name.");
+        return;
+      }
+
+      document.getElementById("userForm").style.display = "none";
+      document.getElementById("trackingInfo").style.display = "block";
+
+      // Initial location send
+      sendLocationToServer(deviceId, name);
+
+      // Start sending every 10 seconds
+      trackingInterval = setInterval(() => {
+        sendLocationToServer(deviceId, name);
+      }, 10000);
+    });
+  </script>
+</body>
+</html>

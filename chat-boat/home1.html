@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Room-Based Real-Time Chat</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <style>
+    body {
+      background-color: #f0f2f5;
+      font-family: 'Segoe UI', sans-serif;
+    }
+
+    .chat-container {
+      max-width: 600px;
+      margin: 30px auto;
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+      display: flex;
+      flex-direction: column;
+      height: 90vh;
+    }
+
+    .chat-header {
+      background-color: #075e54;
+      color: white;
+      padding: 15px 20px;
+      font-size: 1.25rem;
+      font-weight: 600;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .chat-header img {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      object-fit: cover;
+      box-shadow: 0 0 8px rgba(0,0,0,0.15);
+    }
+
+    .chat-header .dropdown {
+      margin-left: auto;
+    }
+
+    .three-dots-btn {
+      background: none;
+      border: none;
+      color: white;
+      font-size: 1.5rem;
+      cursor: pointer;
+    }
+
+    .chat-box {
+      flex: 1;
+      overflow-y: auto;
+      padding: 10px 15px;
+      background: #e5ddd5;
+      display: flex;
+      flex-direction: column-reverse; /* Changed to column-reverse */
+      gap: 10px;
+      scroll-behavior: smooth;
+    }
+
+    .message {
+      max-width: 70%;
+      padding: 10px 14px;
+      border-radius: 18px;
+      font-size: 0.95rem;
+      word-wrap: break-word;
+      white-space: pre-wrap;
+      line-height: auto;
+      box-shadow: 0 1px 0.5px rgba(0, 0, 0, 0.13);
+    }
+
+    .sender {
+      background-color: #dcf8c6;
+      align-self: flex-end;
+      border-bottom-right-radius: 2px;
+    }
+
+    .receiver {
+      background-color: #ffffff;
+      align-self: flex-start;
+      border-bottom-left-radius: 2px;
+    }
+
+    .chat-input {
+      display: flex;
+      gap: 10px;
+      padding: 10px 15px;
+      border-top: 1px solid #ddd;
+      background: #f5f1ee;
+      align-items: center; /* vertically center items */
+    }
+
+    /* File input label styling */
+    .file-label {
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      margin-right: 4px;
+      user-select: none;
+      color: #25d366;
+      font-size: 1.6rem;
+    }
+
+    .chat-input textarea {
+      flex: 1;
+      border-radius: 20px;
+      min-height: 38px;
+      max-height: 120px;
+      resize: none;
+      padding: 10px 14px;
+      font-family: 'Segoe UI', sans-serif;
+      font-size: 1rem;
+      line-height: 1.3;
+      border: 1px solid #ddd;
+      box-shadow: inset 0 1px 1px rgba(0,0,0,0.075);
+      transition: border-color 0.2s ease;
+      overflow-y: auto;
+      white-space: pre-wrap;
+    }
+
+    .chat-input textarea:focus {
+      outline: none;
+      border-color: #25d366;
+      box-shadow: 0 0 5px rgba(37, 211, 102, 0.5);
+    }
+
+    .btn-success {
+      background-color: #25d366;
+      border-color: #25d366;
+      font-weight: 600;
+      font-size: 1rem;
+      padding: 0 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background-color 0.3s ease;
+      border-radius: 20px;
+      white-space: nowrap;
+    }
+
+    .btn-success:hover,
+    .btn-success:focus {
+      background-color: #1ebe57;
+      border-color: #1ebe57;
+      box-shadow: none;
+    }
+
+    .join-section {
+      padding: 20px;
+    }
+
+    .join-section input {
+      border-radius: 25px;
+      padding: 12px 16px;
+      border: 1px solid #ddd;
+      font-size: 1rem;
+      margin-bottom: 12px;
+      transition: border-color 0.2s ease;
+      width: 100%;
+    }
+
+    .join-section input:focus {
+      border-color: #25d366;
+      box-shadow: 0 0 6px rgba(37, 211, 102, 0.4);
+      outline: none;
+    }
+
+    .join-section button {
+      border-radius: 25px;
+      padding: 12px 16px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      width: 100%;
+    }
+
+    /* Chat header more fixed and safe for mobile devices */
+    @media (max-width: 600px) {
+      .chat-header {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        border-radius: 0;
+        width: 100vw;
+        max-width: 100vw;
+        z-index: 9999;
+      }
+
+      .chat-container {
+        margin: 0 auto;
+        border-radius: 0;
+        box-shadow: none;
+        max-width: 100vw;
+        height: 100vh;
+        padding-top: 70px; /* header height */
+      }
+      
+      .chat-box {
+        padding-top: 0 !important; /* Remove if you set padding-top on container */
+        height: calc(100vh - 70px - 70px); /* 70px for header, another for input if needed */
+        /* Adjust 70px if your header/input is taller/shorter */
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="chat-container">
+  <div class="chat-header">
+    <img src="../Assets/photos/puls.png" alt="User Avatar" />
+    <span>✨PulseChat✨</span>
+    <div class="dropdown ms-auto">
+      <button class="three-dots-btn" data-bs-toggle="dropdown" aria-expanded="false">⋮</button>
+      <ul class="dropdown-menu dropdown-menu-end">
+        <li><button class="dropdown-item text-danger" onclick="clearChat()">Clear Chat</button></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="join-section" id="join-section">
+    <input type="text" id="room" placeholder="Enter Room ID" />
+    <input type="text" id="username" placeholder="Enter Your Name" />
+    <button class="btn btn-success" onclick="joinRoom()">Join Room</button>
+  </div>
+
+  <div id="chat-container" class="d-none flex-grow-1 d-flex flex-column">
+    <div id="chat-box" class="chat-box"></div>
+    <div class="chat-input">
+      <label class="file-label" title="Send file">
+        <input type="file" id="fileInput" style="display:none" onchange="sendFile(event)" />
+        📎
+      </label>
+      <textarea id="message" placeholder="Type a message" autocomplete="off" rows="1"></textarea>
+      <button class="btn btn-success" onclick="sendMessage()">Send</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  let username = "";
+  let currentRoomId = "";
+
+  function joinRoom() {
+    const roomInput = document.getElementById("room").value.trim();
+    const userInput = document.getElementById("username").value.trim();
+
+    if (!roomInput) {
+      alert("Please enter a room ID!");
+      return;
+    }
+    if (!userInput) {
+      alert("Please enter your name!");
+      return;
+    }
+
+    currentRoomId = roomInput;
+    username = userInput;
+
+    document.getElementById("join-section").classList.add("d-none");
+    document.getElementById("chat-container").classList.remove("d-none");
+
+    const messageInput = document.getElementById("message");
+    messageInput.focus();
+
+    document.getElementById("chat-box").addEventListener("click", () => {
+      messageInput.focus();
+    });
+
+    loadMessages(true);
+  }
+
+  function autoGrowTextarea(textarea) {
+    textarea.style.height = 'auto';
+    textarea.style.height = textarea.scrollHeight + 'px';
+  }
+
+  function scrollChatToBottom() {
+    const chatBox = document.getElementById("chat-box");
+    chatBox.scrollTop = 0; // scrollTop = 0 for column-reverse to show bottom
+  }
+
+  function adjustLineHeightForMessages() {
+    const messages = document.querySelectorAll('.message');
+    messages.forEach(msg => {
+      if (msg.scrollHeight > msg.clientHeight) {
+        msg.style.lineHeight = '1.2';
+      } else {
+        msg.style.lineHeight = '0.2';
+      }
+    });
+  }
+
+  function appendMessage(msg) {
+    const chatBox = document.getElementById("chat-box");
+    const msgClass = msg.sender === username ? "sender" : "receiver";
+    const msgDiv = document.createElement("div");
+    msgDiv.className = `message ${msgClass}`;
+
+    // Detect file message
+    if (msg.file_url) {
+      let preview = '';
+      const fileName = msg.file_name || "file";
+      if (/\.(jpg|jpeg|png|gif)$/i.test(fileName)) {
+        preview = `<img src="${msg.file_url}" alt="${fileName}" style="max-width:180px;max-height:120px;display:block;margin-bottom:6px;border-radius:8px;">`;
+      } else if (/\.(pdf)$/i.test(fileName)) {
+        preview = `<span style="font-size:2em;">📄</span>`;
+      } else {
+        preview = `<span style="font-size:2em;">📎</span>`;
+      }
+      msgDiv.innerHTML = `<strong>${msg.sender}:</strong><br>${preview}<a href="${msg.file_url}" target="_blank" rel="noopener">${fileName}</a>`;
+    } else {
+      const safeMsg = (msg.message || '').replace(/</g, "&lt;").replace(/>/g, "&gt;");
+      const formattedMsg = safeMsg.replace(/\n/g, "<br>");
+      msgDiv.innerHTML = `<strong>${msg.sender}:</strong> ${formattedMsg}`;
+    }
+
+    chatBox.insertBefore(msgDiv, chatBox.firstChild);
+
+    if (msgDiv.scrollHeight > msgDiv.clientHeight) {
+      msgDiv.style.lineHeight = '1.2';
+    } else {
+      msgDiv.style.lineHeight = '0.2';
+    }
+    scrollChatToBottom();
+  }
+
+  async function sendMessage() {
+    const messageField = document.getElementById("message");
+    const message = messageField.value.trim();
+    if (!message) return;
+
+    try {
+      const res = await fetch("send.php", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({
+          sender: username,
+          room_id: currentRoomId,
+          message
+        }),
+      });
+      if (!res.ok) throw new Error("Failed to send");
+
+      appendMessage({ sender: username, message });
+
+      messageField.value = "";
+      autoGrowTextarea(messageField);
+      messageField.focus();
+    } catch (error) {
+      alert("Failed to send message. Please try again.");
+      console.error(error);
+    }
+  }
+
+  // New function: send file
+  async function sendFile(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    // Show temporary "Uploading file..." message
+    appendMessage({ sender: username, message: "Uploading file...", file_url: null });
+
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("sender", username);
+    formData.append("room_id", currentRoomId);
+
+    try {
+      const res = await fetch("upload.php", {
+        method: "POST",
+        body: formData,
+      });
+      if (!res.ok) throw new Error("Upload failed");
+
+      const data = await res.json();
+
+      if (data && data.url) {
+        // Now send a message referencing the uploaded file
+        const sendRes = await fetch("send.php", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            sender: username,
+            room_id: currentRoomId,
+            message: '', // Empty text message
+            file_url: data.url,
+            file_name: file.name,
+          }),
+        });
+        if (!sendRes.ok) throw new Error("Failed to send file message");
+
+        // Append file message immediately
+        appendMessage({ sender: username, message: '', file_url: data.url, file_name: file.name });
+
+      } else {
+        alert("Failed to upload file.");
+      }
+    } catch (err) {
+      alert('Upload error: ' + err.message);
+      console.error(err);
+    } finally {
+      // Clear file input value so same file can be uploaded again if needed
+      e.target.value = "";
+    }
+  }
+
+  function loadMessages(scrollToBottom = false) {
+    fetch(`messages.php?room_id=${encodeURIComponent(currentRoomId)}`)
+      .then(response => response.json())
+      .then(data => {
+        const chatBox = document.getElementById("chat-box");
+        chatBox.innerHTML = "";
+        if (Array.isArray(data)) {
+          data.forEach(msg => {
+            const msgClass = msg.sender === username ? "sender" : "receiver";
+            const msgDiv = document.createElement("div");
+            msgDiv.className = `message ${msgClass}`;
+
+            // Render file messages similarly
+            if (msg.file_url) {
+              const fileName = msg.file_name || "file";
+              let preview = '';
+              if (/\.(jpg|jpeg|png|gif)$/i.test(fileName)) {
+                preview = `<img src="${msg.file_url}" alt="${fileName}" style="max-width:180px;max-height:120px;display:block;margin-bottom:6px;border-radius:8px;">`;
+              } else if (/\.(pdf)$/i.test(fileName)) {
+                preview = `<span style="font-size:2em;">📄</span>`;
+              } else {
+                preview = `<span style="font-size:2em;">📎</span>`;
+              }
+              msgDiv.innerHTML = `<strong>${msg.sender}:</strong><br>${preview}<a href="${msg.file_url}" target="_blank" rel="noopener">${fileName}</a>`;
+            } else {
+              const safeMsg = (msg.message || '').replace(/</g, "&lt;").replace(/>/g, "&gt;");
+              const formattedMsg = safeMsg.replace(/\n/g, "<br>");
+              msgDiv.innerHTML = `<strong>${msg.sender}:</strong> ${formattedMsg}`;
+            }
+            chatBox.insertBefore(msgDiv, chatBox.firstChild);
+          });
+          adjustLineHeightForMessages();
+        }
+        if (scrollToBottom) {
+          scrollChatToBottom();
+        }
+      });
+  }
+
+  function clearChat() {
+    if (confirm("Are you sure you want to clear the chat?")) {
+      fetch("clear.php", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({ room_id: currentRoomId }),
+      })
+      .then(res => res.json())
+      .then(() => loadMessages(true));
+    }
+  }
+
+  window.onload = () => {
+    const messageInput = document.getElementById("message");
+
+    messageInput.addEventListener('input', () => {
+      autoGrowTextarea(messageInput);
+    });
+
+    messageInput.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" && !e.shiftKey) {
+        e.preventDefault();
+        if (messageInput.value.trim() !== "") {
+          sendMessage();
+        }
+      }
+    });
+
+    messageInput.addEventListener("focus", () => {
+      setTimeout(() => {
+        scrollChatToBottom();
+      }, 200);
+    });
+
+    setInterval(() => {
+      if (username && currentRoomId) loadMessages(false);
+    }, 500);
+  };
+
+  // Typing status functions (unchanged)
+  let typingTimeout;
+  let isTyping = false;
+
+  function userTyping() {
+    if (!isTyping) {
+      isTyping = true;
+      sendTypingStatus(true); // Send 'typing' status to server
+    }
+
+    clearTimeout(typingTimeout);
+    typingTimeout = setTimeout(() => {
+      isTyping = false;
+      sendTypingStatus(false); // Send 'stopped typing' status to server
+    }, 2000); // 2 seconds after last key press
+  }
+
+  async function sendTypingStatus(status) {
+    try {
+      await fetch("typing.php", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          sender: username,
+          room_id: currentRoomId,
+          typing: status,
+        }),
+      });
+    } catch(err) {
+      // Handle error silently or log
+    }
+  }
+
+  function loadTypingStatus() {
+    fetch(`typing.php?room_id=${encodeURIComponent(currentRoomId)}`)
+      .then(res => res.json())
+      .then(data => {
+        const typingIndicator = document.getElementById("typing-indicator");
+        if (data && data.typing && data.sender !== username) {
+          typingIndicator.textContent = `${data.sender} is typing...`;
+        } else {
+          typingIndicator.textContent = "";
+        }
+      });
+  }
+
+  setInterval(() => {
+    if (username && currentRoomId) loadTypingStatus();
+  }, 500);
+
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

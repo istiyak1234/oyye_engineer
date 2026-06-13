@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Room-Based Real-Time Chat with Join Approval</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <style>
+    body {
+      background-color: #f0f2f5;
+      font-family: 'Segoe UI', sans-serif;
+    }
+
+    .chat-container {
+      max-width: 600px;
+      margin: 30px auto;
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+      display: flex;
+      flex-direction: column;
+      height: 90vh;
+      position: relative;
+    }
+
+    .chat-header {
+      background-color: #075e54;
+      color: white;
+      padding: 15px 20px;
+      font-size: 1.25rem;
+      font-weight: 600;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .chat-header img {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      object-fit: cover;
+      box-shadow: 0 0 8px rgba(0,0,0,0.15);
+    }
+
+    .chat-header .dropdown {
+      margin-left: auto;
+    }
+
+    .three-dots-btn {
+      background: none;
+      border: none;
+      color: white;
+      font-size: 1.5rem;
+      cursor: pointer;
+    }
+
+    .chat-box {
+      flex: 1;
+      overflow-y: auto;
+      padding: 10px 15px;
+      background: #e5ddd5;
+      display: flex;
+      flex-direction: column-reverse; /* Changed to column-reverse */
+      gap: 10px;
+      scroll-behavior: smooth;
+    }
+
+    .message {
+      max-width: 70%;
+      padding: 10px 14px;
+      border-radius: 18px;
+      font-size: 0.95rem;
+      word-wrap: break-word;
+      white-space: pre-wrap;
+      line-height: auto;
+      box-shadow: 0 1px 0.5px rgba(0, 0, 0, 0.13);
+    }
+
+    .sender {
+      background-color: #dcf8c6;
+      align-self: flex-end;
+      border-bottom-right-radius: 2px;
+    }
+
+    .receiver {
+      background-color: #ffffff;
+      align-self: flex-start;
+      border-bottom-left-radius: 2px;
+    }
+
+    .chat-input {
+      display: flex;
+      gap: 10px;
+      padding: 10px 15px;
+      border-top: 1px solid #ddd;
+      background: #f5f1ee;
+      align-items: center; /* vertically center items */
+    }
+
+    /* File input label styling */
+    .file-label {
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      margin-right: 4px;
+      user-select: none;
+      color: #25d366;
+      font-size: 1.6rem;
+    }
+
+    .chat-input textarea {
+      flex: 1;
+      border-radius: 20px;
+      min-height: 38px;
+      max-height: 120px;
+      resize: none;
+      padding: 10px 14px;
+      font-family: 'Segoe UI', sans-serif;
+      font-size: 1rem;
+      line-height: 1.3;
+      border: 1px solid #ddd;
+      box-shadow: inset 0 1px 1px rgba(0,0,0,0.075);
+      transition: border-color 0.2s ease;
+      overflow-y: auto;
+      white-space: pre-wrap;
+    }
+
+    .chat-input textarea:focus {
+      outline: none;
+      border-color: #25d366;
+      box-shadow: 0 0 5px rgba(37, 211, 102, 0.5);
+    }
+
+    .btn-success {
+      background-color: #25d366;
+      border-color: #25d366;
+      font-weight: 600;
+      font-size: 1rem;
+      padding: 0 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background-color 0.3s ease;
+      border-radius: 20px;
+      white-space: nowrap;
+    }
+
+    .btn-success:hover,
+    .btn-success:focus {
+      background-color: #1ebe57;
+      border-color: #1ebe57;
+      box-shadow: none;
+    }
+
+    .join-section {
+      padding: 20px;
+    }
+
+    .join-section input {
+      border-radius: 25px;
+      padding: 12px 16px;
+      border: 1px solid #ddd;
+      font-size: 1rem;
+      margin-bottom: 12px;
+      transition: border-color 0.2s ease;
+      width: 100%;
+    }
+
+    .join-section input:focus {
+      border-color: #25d366;
+      box-shadow: 0 0 6px rgba(37, 211, 102, 0.4);
+      outline: none;
+    }
+
+    .join-section button {
+      border-radius: 25px;
+      padding: 12px 16px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      width: 100%;
+    }
+
+    /* Container for join requests (Owner UI) */
+    #join-requests-container {
+      display: none;
+      padding: 15px 20px;
+      border-top: 1px solid #ddd;
+      background: #fff;
+      max-height: 150px;
+      overflow-y: auto;
+    }
+
+    /* Waiting for approval message */
+    #waiting-approval {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 1.1rem;
+      color: #333;
+    }
+
+    /* Chat header more fixed and safe for mobile devices */
+    @media (max-width: 600px) {
+      .chat-header {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        border-radius: 0;
+        width: 100vw;
+        max-width: 100vw;
+        z-index: 9999;
+      }
+
+      .chat-container {
+        margin: 0 auto;
+        border-radius: 0;
+        box-shadow: none;
+        max-width: 100vw;
+        height: 100vh;
+        padding-top: 70px; /* header height */
+        position: relative;
+      }
+      
+      .chat-box {
+        padding-top: 0 !important; /* Remove if you set padding-top on container */
+        height: calc(100vh - 70px - 70px); /* 70px for header, another for input if needed */
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="chat-container">
+  <div class="chat-header">
+    <img src="../Assets/photos/puls.png" alt="User Avatar" />
+    <span>✨PulseChat✨</span>
+    <div class="dropdown ms-auto">
+      <button class="three-dots-btn" data-bs-toggle="dropdown" aria-expanded="false">⋮</button>
+      <ul class="dropdown-menu dropdown-menu-end">
+        <li><button class="dropdown-item text-danger" onclick="clearChat()">Clear Chat</button></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="join-section" id="join-section">
+    <input type="text" id="room" placeholder="Enter Room ID" />
+    <input type="text" id="username" placeholder="Enter Your Name" />
+    <button class="btn btn-success" onclick="joinRoom()">Join Room</button>
+  </div>
+  
+  <!-- Join Requests container for room owner -->
+  <div id="join-requests-container">
+    <strong>Join Requests:</strong>
+    <div id="join-requests-list" style="margin-top:8px; max-height: 120px; overflow-y:auto;"></div>
+  </div>
+
+  <div id="chat-container" class="d-none flex-grow-1 d-flex flex-column">
+    <div id="chat-box" class="chat-box"></div>
+    <div class="chat-input">
+      <label class="file-label" title="Send file">
+        <input type="file" id="fileInput" style="display:none" onchange="sendFile(event)" />
+        📎
+      </label>
+      <textarea id="message" placeholder="Type a message" autocomplete="off" rows="1"></textarea>
+      <button class="btn btn-success" onclick="sendMessage()">Send</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  let username = "";
+  let currentRoomId = "";
+  let isOwner = false; // determine if user is room owner
+  let joinApproved = false; // user join approval status
+
+  let pollingJoinApprovalInterval = null;
+  let pollingJoinRequestsInterval = null;
+
+  // Join Room logic with join request approval:
+  async function joinRoom() {
+    const roomInput = document.getElementById("room").value.trim();
+    const userInput = document.getElementById("username").value.trim();
+
+    if (!roomInput) {
+      alert("Please enter a room ID!");
+      return;
+    }
+    if (!userInput) {
+      alert("Please enter your name!");
+      return;
+    }
+
+    currentRoomId = roomInput;
+    username = userInput;
+
+    try {
+      const res = await fetch("joinRequest.php", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({ room_id: currentRoomId, username }),
+      });
+      if (!res.ok) throw new Error("Failed to send join request");
+
+      const data = await res.json();
+
+      if (data.isOwner) {
+        isOwner = true;
+        joinApproved = true; // Owner always approved
+        document.getElementById("join-requests-container").style.display = "block";
+        showChatUI();
+        startPollingJoinRequests();
+      } else {
+        // Not owner, wait for approval
+        alert("Join request sent. Waiting for approval...");
+        showWaitingForApprovalMessage();
+        startPollingJoinApproval();
+      }
+
+    } catch (error) {
+      alert("Error sending join request: " + error.message);
+      console.error(error);
+    }
+  }
+
+  // Show the waiting for approval message
+  function showWaitingForApprovalMessage() {
+    document.getElementById("join-section").classList.add("d-none");
+    document.getElementById("chat-container").classList.add("d-none");
+
+    if (!document.getElementById("waiting-approval")) {
+      const div = document.createElement("div");
+      div.id = "waiting-approval";
+      div.className = "p-3 text-center";
+      div.textContent = "Waiting for room owner approval...";
+      document.querySelector(".chat-container").appendChild(div);
+    }
+  }
+
+  // Show chat UI after approved
+  function showChatUI() {
+    const waitingDiv = document.getElementById("waiting-approval");
+    if (waitingDiv) waitingDiv.remove();
+
+    document.getElementById("join-section").classList.add("d-none");
+    document.getElementById("chat-container").classList.remove("d-none");
+
+    const messageInput = document.getElementById("message");
+    messageInput.focus();
+
+    document.getElementById("chat-box").addEventListener("click", () => {
+      messageInput.focus();
+    });
+
+    loadMessages(true);
+  }
+
+  // Poll join approval status for user
+  function startPollingJoinApproval() {
+    if (pollingJoinApprovalInterval) clearInterval(pollingJoinApprovalInterval);
+
+    pollingJoinApprovalInterval = setInterval(async () => {
+      try {
+        const res = await fetch(`joinRequestStatus.php?room_id=${encodeURIComponent(currentRoomId)}&username=${encodeURIComponent(username)}`);
+        if (!res.ok) throw new Error("Failed to get join request status");
+
+        const data = await res.json();
+
+        if (data.approved) {
+          clearInterval(pollingJoinApprovalInterval);
+          joinApproved = true;
+          alert("Your join request was approved. You can now chat.");
+          showChatUI();
+        } else if (data.rejected) {
+          clearInterval(pollingJoinApprovalInterval);
+          alert("Your join request was rejected by the room owner.");
+          location.reload();
+        }
+      } catch(e) {
+        console.error("Error polling join approval:", e);
+      }
+    }, 2000);
+  }
+
+  // Owner: poll join requests periodically
+  function startPollingJoinRequests() {
+    if (pollingJoinRequestsInterval) clearInterval(pollingJoinRequestsInterval);
+
+    pollingJoinRequestsInterval = setInterval(async () => {
+      try {
+        const res = await fetch(`joinRequests.php?room_id=${encodeURIComponent(currentRoomId)}`);
+        if (!res.ok) throw new Error("Failed to get join requests");
+
+        const data = await res.json();
+
+        renderJoinRequests(data.requests || []);
+      } catch(e) {
+        console.error("Error polling join requests:", e);
+      }
+    }, 3000);
+  }
+
+  // Owner: render join requests UI
+  function renderJoinRequests(requests) {
+    const container = document.getElementById("join-requests-list");
+    container.innerHTML = "";
+
+    if (requests.length === 0) {
+      container.innerHTML = "<em>No pending join requests.</em>";
+      return;
+    }
+
+    requests.forEach(req => {
+      const div = document.createElement("div");
+      div.className = "d-flex justify-content-between align-items-center mb-1";
+      div.innerHTML = `
+        <span>${req.username}</span>
+        <span>
+          <button class="btn btn-sm btn-success me-1" onclick="approveJoinRequest('${req.username}')">Approve</button>
+          <button class="btn btn-sm btn-danger" onclick="rejectJoinRequest('${req.username}')">Reject</button>
+        </span>
+      `;
+      container.appendChild(div);
+    });
+  }
+
+  // Owner: approve join request
+  async function approveJoinRequest(usernameToApprove) {
+    try {
+      const res = await fetch("approveRequest.php", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({ room_id: currentRoomId, username: usernameToApprove, approve: true }),
+      });
+      if (!res.ok) throw new Error("Failed to approve join request");
+
+      alert(`${usernameToApprove} approved.`);
+      // Optionally remove from list or refresh join requests immediately
+    } catch(e) {
+      alert("Error approving request: " + e.message);
+    }
+  }
+
+  // Owner: reject join request
+  async function rejectJoinRequest(usernameToReject) {
+    try {
+      const res = await fetch("approveRequest.php", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({ room_id: currentRoomId, username: usernameToReject, approve: false }),
+      });
+      if (!res.ok) throw new Error("Failed to reject join request");
+
+      alert(`${usernameToReject} rejected.`);
+      // Optionally remove from list or refresh join requests immediately
+    } catch(e) {
+      alert("Error rejecting request: " + e.message);
+    }
+  }
+
+  // Chat message appending, same as before
+  function appendMessage(msg) {
+    const chatBox = document.getElementById("chat-box");
+    const msgClass = msg.sender === username ? "sender" : "receiver";
+    const msgDiv = document.createElement("div");
+    msgDiv.className = `message ${msgClass}`;
+
+    if (msg.file_url) {
+      let preview = '';
+      const fileName = msg.file_name || "file";
+      if (/\.(jpg|jpeg|png|gif)$/i.test(fileName)) {
+        preview = `<img src="${msg.file_url}" alt="${fileName}" style="max-width:180px;max-height:120px;display:block;margin-bottom:6px;border-radius:8px;">`;
+      } else if (/\.(pdf)$/i.test(fileName)) {
+        preview = `<span style="font-size:2em;">📄</span>`;
+      } else {
+        preview = `<span style="font-size:2em;">📎</span>`;
+      }
+      msgDiv.innerHTML = `<strong>${msg.sender}:</strong><br>${preview}<a href="${msg.file_url}" target="_blank" rel="noopener">${fileName}</a>`;
+    } else {
+      const safeMsg = (msg.message || '').replace(/</g, "&lt;").replace(/>/g, "&gt;");
+      const formattedMsg = safeMsg.replace(/\n/g, "<br>");
+      msgDiv.innerHTML = `<strong>${msg.sender}:</strong> ${formattedMsg}`;
+    }
+
+    chatBox.insertBefore(msgDiv, chatBox.firstChild);
+
+    if (msgDiv.scrollHeight > msgDiv.clientHeight) {
+      msgDiv.style.lineHeight = '1.2';
+    } else {
+      msgDiv.style.lineHeight = '0.2';
+    }
+    scrollChatToBottom();
+  }
+
+  // Load messages from server
+  function loadMessages(scrollToBottom = false) {
+    fetch(`messages.php?room_id=${encodeURIComponent(currentRoomId)}`)
+      .then(response => response.json())
+      .then(data => {
+        const chatBox = document.getElementById("chat-box");
+        chatBox.innerHTML = "";
+        if (Array.isArray(data)) {
+          data.forEach(msg => {
+            const msgClass = msg.sender === username ? "sender" : "receiver";
+            const msgDiv = document.createElement("div");
+            msgDiv.className = `message ${msgClass}`;
+
+            if (msg.file_url) {
+              const fileName = msg.file_name || "file";
+              let preview = '';
+              if (/\.(jpg|jpeg|png|gif)$/i.test(fileName)) {
+                preview = `<img src="${msg.file_url}" alt="${fileName}" style="max-width:180px;max-height:120px;display:block;margin-bottom:6px;border-radius:8px;">`;
+              } else if (/\.(pdf)$/i.test(fileName)) {
+                preview = `<span style="font-size:2em;">📄</span>`;
+              } else {
+                preview = `<span style="font-size:2em;">📎</span>`;
+              }
+              msgDiv.innerHTML = `<strong>${msg.sender}:</strong><br>${preview}<a href="${msg.file_url}" target="_blank" rel="noopener">${fileName}</a>`;
+            } else {
+              const safeMsg = (msg.message || '').replace(/</g, "&lt;").replace(/>/g, "&gt;");
+              const formattedMsg = safeMsg.replace(/\n/g, "<br>");
+              msgDiv.innerHTML = `<strong>${msg.sender}:</strong> ${formattedMsg}`;
+            }
+            chatBox.insertBefore(msgDiv, chatBox.firstChild);
+          });
+        }
+        if (scrollToBottom) scrollChatToBottom();
+      }).catch(console.error);
+  }
+
+  // Scroll chat to bottom (remember flex-column-reverse)
+  function scrollChatToBottom() {
+    const chatBox = document.getElementById("chat-box");
+    chatBox.scrollTop = 0;
+  }
+
+  // Clear chat
+  function clearChat() {
+    if (confirm("Are you sure you want to clear the chat?")) {
+      fetch("clear.php", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({ room_id: currentRoomId }),
+      })
+      .then(res => res.json())
+      .then(() => loadMessages(true));
+    }
+  }
+
+  // Auto grow textarea logic
+  function autoGrowTextarea(textarea) {
+    textarea.style.height = 'auto';
+    textarea.style.height = textarea.scrollHeight + 'px';
+  }
+
+  // Send message (blocked if not approved)
+  async function sendMessage() {
+    if (!joinApproved && !isOwner) {
+      alert("You cannot send messages until your join request is approved.");
+      return;
+    }
+
+    const messageField = document.getElementById("message");
+    const message = messageField.value.trim();
+    if (!message) return;
+
+    try {
+      const res = await fetch("send.php", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({
+          sender: username,
+          room_id: currentRoomId,
+          message
+        }),
+      });
+      if (!res.ok) throw new Error("Failed to send");
+
+      appendMessage({ sender: username, message });
+
+      messageField.value = "";
+      autoGrowTextarea(messageField);
+      messageField.focus();
+    } catch (error) {
+      alert("Failed to send message. Please try again.");
+      console.error(error);
+    }
+  }
+
+  // Send file upload (blocked if not approved)
+  async function sendFile(e) {
+    if (!joinApproved && !isOwner) {
+      alert("You cannot send files until your join request is approved.");
+      e.target.value = "";
+      return;
+    }
+    const file = e.target.files[0];
+    if (!file) return;
+
+    appendMessage({ sender: username, message: "Uploading file...", file_url: null });
+
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("sender", username);
+    formData.append("room_id", currentRoomId);
+
+    try {
+      const res = await fetch("upload.php", {
+        method: "POST",
+        body: formData,
+      });
+      if (!res.ok) throw new Error("Upload failed");
+
+      const data = await res.json();
+
+      if (data && data.url) {
+        const sendRes = await fetch("send.php", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            sender: username,
+            room_id: currentRoomId,
+            message: '',
+            file_url: data.url,
+            file_name: file.name,
+          }),
+        });
+        if (!sendRes.ok) throw new Error("Failed to send file message");
+
+        appendMessage({ sender: username, message: '', file_url: data.url, file_name: file.name });
+      } else {
+        alert("Failed to upload file.");
+      }
+    } catch (err) {
+      alert('Upload error: ' + err.message);
+      console.error(err);
+    } finally {
+      e.target.value = "";
+    }
+  }
+
+  // Typing indication code (unchanged from previous)
+  let typingTimeout;
+  let isTyping = false;
+
+  function userTyping() {
+    if (!isTyping) {
+      isTyping = true;
+      sendTypingStatus(true);
+    }
+    clearTimeout(typingTimeout);
+    typingTimeout = setTimeout(() => {
+      isTyping = false;
+      sendTypingStatus(false);
+    }, 2000);
+  }
+
+  async function sendTypingStatus(status) {
+    try {
+      await fetch("typing.php", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          sender: username,
+          room_id: currentRoomId,
+          typing: status,
+        }),
+      });
+    } catch(err) {
+      // silent failure
+    }
+  }
+
+  function loadTypingStatus() {
+    fetch(`typing.php?room_id=${encodeURIComponent(currentRoomId)}`)
+      .then(res => res.json())
+      .then(data => {
+        const typingIndicator = document.getElementById("typing-indicator");
+        if (data && data.typing && data.sender !== username) {
+          typingIndicator.textContent = `${data.sender} is typing...`;
+        } else if (typingIndicator) {
+          typingIndicator.textContent = "";
+        }
+      }).catch(() => {});
+  }
+
+  // Initialization on page load
+  window.onload = () => {
+    const messageInput = document.getElementById("message");
+
+    messageInput.addEventListener('input', () => {
+      autoGrowTextarea(messageInput);
+      userTyping();
+    });
+
+    messageInput.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" && !e.shiftKey) {
+        e.preventDefault();
+        if (messageInput.value.trim() !== "") {
+          sendMessage();
+        }
+      }
+    });
+
+    messageInput.addEventListener("focus", () => {
+      setTimeout(() => {
+        scrollChatToBottom();
+      }, 200);
+    });
+
+    // Poll messages and typing statuses only if joined & approved
+    setInterval(() => {
+      if (username && currentRoomId && (joinApproved || isOwner)) loadMessages(false);
+    }, 500);
+
+    setInterval(() => {
+      if (username && currentRoomId && (joinApproved || isOwner)) loadTypingStatus();
+    }, 500);
+  };
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
